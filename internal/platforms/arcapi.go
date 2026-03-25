@@ -1,5 +1,5 @@
 /*
- * ● ArcMusic
+ * ● YukkiMusic
  * ○ A high-performance engine for streaming music in Telegram voicechats.
  *
  * Copyright (C) 2026 Team Arc
@@ -16,15 +16,10 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/Laky-64/gologging"
 	"github.com/amarnathcjd/gogram/telegram"
-	
-	"go.mongodb.org/mongo-driver/v2/bson"
-	"go.mongodb.org/mongo-driver/v2/mongo"
-	"go.mongodb.org/mongo-driver/v2/mongo/options"
 
 	"main/internal/config"
 	"main/internal/core"
@@ -38,11 +33,6 @@ var telegramDLRegex = regexp.MustCompile(
 
 const PlatformArcApi state.PlatformName = "ArcApi"
 
-var (
-	mediaDbOnce     sync.Once
-	mediaCollection *mongo.Collection
-)
-
 type ArcApiPlatform struct {
 	name state.PlatformName
 }
@@ -51,24 +41,6 @@ func init() {
 	Register(80, &ArcApiPlatform{
 		name: PlatformArcApi,
 	})
-}
-
-// getMediaCollection safely initializes the MongoDB connection once
-func getMediaCollection() *mongo.Collection {
-	mediaDbOnce.Do(func() {
-		if config.DbURI == "" {
-			return
-		}
-		opts := options.Client().ApplyURI(config.DbURI)
-		client, err := mongo.Connect(opts)
-		if err != nil {
-			gologging.Error("ArcApi: Failed to connect to Media DB: " + err.Error())
-			return
-		}
-		mediaCollection = client.Database("arcapi").Collection("medias")
-		gologging.Info("ArcApi: Connected to Media DB successfully")
-	})
-	return mediaCollection
 }
 
 func (f *ArcApiPlatform) Name() state.PlatformName {
@@ -113,17 +85,9 @@ func (f *ArcApiPlatform) Download(
 	}
 	path := getPath(track, "."+ext)
 
-	// 1. Try Media DB Cache (Telegram Channel Download)
-	if dbPath, err := f.downloadFromMediaDB(ctx, track, path, pm); err == nil && dbPath != "" {
-		gologging.Info(fmt.Sprintf("✅ DB-CACHE | %s | Video: %t", track.ID, track.Video))
-		return dbPath, nil
-	} else if err != nil {
-		gologging.DebugF("ArcApi DB check failed or missed: %v", err)
-	}
+	gologging.Debug("ArcApi: Fetching download URL from API V2")
 
-	gologging.Debug("ArcApi: DB Miss -> Falling back to API V2 Download")
-
-	// 2. Try V2 API Polling (Optimized Download)
+	// 1. Try V2 API Polling (Optimized Download)
 	dlURL, err := f.v2Download(ctx, track)
 	if err != nil {
 		gologging.ErrorF("ArcApi: V2 Download failed: %v", err)
@@ -156,80 +120,7 @@ func (*ArcApiPlatform) Search(string, bool) ([]*state.Track, error) {
 	return nil, nil
 }
 
-// --- Optimization Core: Database & API V2 ---
-
-func (f *ArcApiPlatform) downloadFromMediaDB(
-	ctx context.Context,
-	track *state.Track,
-	path string,
-	pm *telegram.ProgressManager,
-) (string, error) {
-	col := getMediaCollection()
-	if col == nil {
-		return "", errors.New("db not configured")
-	}
-	if config.MediachannelId == 0 {
-		return "", errors.New("media channel not configured")
-	}
-
-	ext := "mp3"
-	mediaType := "a"
-	if track.Video {
-		ext = "mp4"
-		mediaType = "v"
-	}
-
-	keys := []string{
-		fmt.Sprintf("%s.%s", track.ID, ext),
-		track.ID,
-		fmt.Sprintf("%s_%s", track.ID, mediaType),
-		fmt.Sprintf("%s_%s.%s", track.ID, mediaType, ext),
-	}
-
-	filter := bson.M{
-		"track_id": bson.M{"$in": keys},
-		"isVideo":  track.Video, // Dynamically checks audio vs video
-	}
-
-	var result struct {
-		MessageID int32 `bson:"message_id"`
-	}
-
-	err := col.FindOne(ctx, filter).Decode(&result)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return "", errors.New("track not found in db cache")
-		}
-		return "", err
-	}
-
-	if result.MessageID == 0 {
-		return "", errors.New("invalid message_id in db")
-	}
-
-	gologging.DebugF("ArcApi: Found MessageID %d in MediaChannel %d", result.MessageID, config.MediachannelId)
-
-	msg, err := core.Bot.GetMessageByID(config.MediachannelId, result.MessageID)
-	if err != nil {
-		return "", fmt.Errorf("failed to fetch message from channel: %w", err)
-	}
-
-	dOpts := &telegram.DownloadOptions{
-		FileName: path,
-		Ctx:      ctx,
-	}
-	if pm != nil {
-		dOpts.ProgressManager = pm
-	}
-
-	_, err = msg.Download(dOpts)
-	if err != nil {
-		os.Remove(path)
-		return "", err
-	}
-
-	return path, nil
-}
+// --- Optimization Core: API V2 ---
 
 func (f *ArcApiPlatform) v2Download(ctx context.Context, track *state.Track) (string, error) {
 	apiURL := config.ArcAPIURL
