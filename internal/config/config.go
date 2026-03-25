@@ -30,8 +30,6 @@ var (
 
 	// Optional Variables
 	OwnerID             int64
-	MediachannelId      int64
-	DbURI               string
 	SpotifyClientID     string
 	SpotifyClientSecret string
 	ArcAPIURL           string
@@ -101,12 +99,10 @@ func loadConfig() {
 
 	// Load Optional
 	OwnerID = getInt64("OWNER_ID", 0)
-	MediachannelId = getInt64("MEDIA_CHANNEL_ID", 0)
-	DbURI = getString("DB_URI", "")
 	SpotifyClientID = getString("SPOTIFY_CLIENT_ID", "")
 	SpotifyClientSecret = getString("SPOTIFY_CLIENT_SECRET", "")
 	ArcAPIURL = getString("ARC_API_URL", "https://api.deadlinetech.site")
-	ArcAPIKey = getString("ARC_API_KEY", "ARC96c49b834dd77e50c18ae2")
+	ArcAPIKey = getString("ARC_API_KEY", "")
 
 	DefaultLang = getString("DEFAULT_LANG", "en")
 	DurationLimit = int(getInt64("DURATION_LIMIT", 3600)) // In seconds
@@ -120,7 +116,7 @@ func loadConfig() {
 
 	StartImage = getString(
 		"START_IMG_URL",
-		"https://files.catbox.moe/ti82r1.jpg",
+		"https://files.catbox.moe/he87u5.jpg",
 	)
 	PingImage = getString(
 		"PING_IMG_URL",
