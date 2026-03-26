@@ -118,7 +118,10 @@ func startCB(cb *tg.CallbackQuery) error {
 	}
 
 	if config.StartImage != "" {
-		sendOpt.Media = config.StartImage
+		sendOpt.Media = &tg.InputMediaWebPage{
+			URL:             config.StartImage,
+			ForceLargeMedia: true,
+		}
 	}
 
 	cb.Edit(caption, sendOpt)
