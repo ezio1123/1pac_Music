@@ -27,6 +27,7 @@ var AllCommands = BotCommands{
 		{Command: "start", Description: "Start the bot."},
 		{Command: "help", Description: "Show help menu."},
 		{Command: "ping", Description: "Check if the bot is alive."},
+		{Command: "sudolist", Description: "List sudo users."},
 	},
 	PrivateSudoCommands: []*telegram.BotCommand{
 		{Command: "ac", Description: "Show active voice chats."},
@@ -73,6 +74,14 @@ var AllCommands = BotCommands{
 		{Command: "pause", Description: "Pause the current song."},
 		{Command: "resume", Description: "Resume the current song."},
 		{Command: "replay", Description: "Replay the current song."},
+		{
+			Command:     "playmode",
+			Description: "Control who can use /play command.",
+		},
+		{
+			Command:     "cmddelete",
+			Description: "Toggle automatic deletion of bot commands.",
+		},
 		{Command: "mute", Description: "Mute the bot in the voice chat."},
 		{Command: "unmute", Description: "Unmute the bot in the voice chat."},
 		{
