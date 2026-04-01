@@ -56,7 +56,7 @@ func handlePosition(m *tg.NewMessage, cplay bool) error {
 
 	r.Parse()
 
-	title := html.EscapeString(utils.ShortTitle(r.Track().Title, 25))
+	title := utils.EscapeHTML(utils.ShortTitle(r.Track().Title, 25))
 
 	m.Reply(F(chatID, "position_now", locales.Arg{
 		"title":    title,
