@@ -485,6 +485,17 @@ play_failed: "❌ Failed to play\nError: {error}"
 play_unable: "<b> ❌ Unable to Play </b>\n\n<i>Please <b>restart the voice</b> chat.</i>"
 play_downloading_song: "📥 Downloading song \"{title}\""
 play_download_canceled: "⚠️ Download canceled by {user}."
+playmode_help: |
+  🛠️ <b>Play Mode</b>
+
+  <b>Status:</b> {status}
+  <b>Usage:</b> <code>/playmode [enable|disable]</code>
+
+playmode_status_admins: "<b>Admins Only</b> 🔐"
+playmode_status_everyone: "<b>Everyone</b> 🌍"
+playmode_success_admins: "🛡️ <b>Play mode</b> is now restricted to <b>Admins & DJs</b> only. 🎧"
+playmode_success_everyone: "✅ <b>Play mode</b> is now <b>Open to Everyone</b>. Let the music flow! 🎶"
+playmode_restricted: "🚫 Play mode is enabled. Only admins and authorized users can play."
 play_added_multiple_header: "➕ <b>Added {count} tracks</b> by {user}"
 play_queue_limit_hint: "⚠️ Queue limit reached — some tracks were skipped."
 play_queue_view_hint: "Use /queue to view full list."
@@ -760,7 +771,6 @@ stats_served_chats_err: "• Chats: <code>Error: {error}</code>"
 stats_served_users: "• Users: <code>{count}</code>"
 stats_served_users_err: "• Users: <code>Error: {error}</code>"
 
-# 👑 Sudo users
 
 sudo_owner_self: "😂 Haha, you’re the boss already! Why are you even trying to add yourself?"
 sudo_bot_self: "🤖 Haha, I’m the bot! I can’t add myself to the sudo list — even the owner can’t cheat me 😎"
@@ -894,7 +904,7 @@ stream_now_playing: |
   <b>Duration:</b> {duration}
   <b>Requested by:</b> {by}
 
-# 👑 Sudo / Owner Join Messages
+
 sudo_join_owner: "👑 {user} — owner of {bot} — just entered the chat."
 sudo_join_sudo: "🛡️ {user}, a sudo user of {bot}, just joined the chat."
 
@@ -917,15 +927,10 @@ unmute_success: |
   {speed_line}
 
 
-# 🔊 Voice Chat Events
-voicechat_ended: "<b>⚠️ Video chat ended</b>\n\n<i>⏰ Duration: {duration}</i>"
-voicechat_started: "<b>♻️ Voice chat started!</b>\n\n<i>Use /play [song name] to play music.</i>"
-
-# Commands help
 help_owner: |
   👑 <b>Owner Commands</b>
 
-  <i>Exclusive tools for managing sudoers, executing system code, and performing bot administration securely.</i>
+  Exclusive tools for managing sudoers, executing system code, and performing bot administration securely.
 
   <b>Commands:</b>
   <b>/addsudo</b> - Add a new user to bot's sudolist
@@ -938,7 +943,7 @@ help_owner: |
 help_sudo: |
   ⚡ <b>Sudoer Commands</b>
 
-  <i>Advanced tools for managing bot behavior, monitoring performance, and controlling logging and automation.</i>
+  Advanced tools for managing bot behavior, monitoring performance, and controlling logging and automation.
 
   <b>Commands:</b>
   <b>/active</b> - Shows total active chats
@@ -950,7 +955,7 @@ help_sudo: |
 help_admin: |
   🛠 <b>Admin Commands</b>
 
-  <i>Music and playback control tools for admins to handle playback easily.</i>
+  Music and playback control tools for admins to handle playback easily.
 
   <b>Commands:</b>
   <b>/playmode</b> - Control who can use /play
@@ -976,7 +981,7 @@ help_admin: |
 help_public: |
   🌍 <b>Public Commands</b>
 
-  <i>Features for playing songs, viewing queues, checking latency, and reporting bugs.</i>
+  Features for playing songs, viewing queues, checking latency, and reporting bugs.
 
   <b>Commands:</b>
   <b>/play</b> - Play a song
@@ -989,4 +994,4 @@ help_public: |
   <b>/reload</b> - Reload admin or cache data
   <b>/json</b> - Show message JSON structure
   <b>/sudolist</b> - View sudo user list
-
+  <b>/privacy<b> - open privacy policy
