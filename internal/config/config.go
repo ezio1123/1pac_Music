@@ -1,8 +1,8 @@
 /*
- * ● ArcMusic
+ * ● LUCIUZ•Music
  * ○ A high-performance engine for streaming music in Telegram voicechats.
  *
- * Copyright (C) 2026 Team Arc
+ * Copyright (C) 2026 Team LCZ
  */
 
 package config
